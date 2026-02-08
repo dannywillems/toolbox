@@ -1,0 +1,36 @@
+name: changelog
+
+on:
+  push:
+    branches: [master, main]
+    paths:
+      - "changelog/**"
+  pull_request:
+    branches: [master, main]
+    paths:
+      - "changelog/**"
+
+jobs:
+  shellcheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install shellcheck
+        run: sudo apt-get install -y shellcheck
+
+      - name: Shellcheck changelog scripts
+        run: shellcheck changelog/*.sh
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run check-commit.sh --help
+        run: ./changelog/check-commit.sh --help
+
+      - name: Run check-commit.sh against HEAD~1
+        run: ./changelog/check-commit.sh HEAD~1
