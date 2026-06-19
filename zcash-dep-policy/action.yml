@@ -43,4 +43,5 @@ runs:
         if [ -n "$ZDP_MANIFEST" ]; then
           args+=(--manifest "$ZDP_MANIFEST")
         fi
-        python3 "$ZDP_DIR/dep_policy.py" "${args[@]}"
+        # Same entrypoint developers run locally (finds dep_policy.py alongside).
+        "$ZDP_DIR/zcash-dep-policy.sh" "${args[@]}"
