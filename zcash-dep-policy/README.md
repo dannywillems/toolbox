@@ -40,7 +40,34 @@ for `ls-remote`), driven by a per-repo `governed-libs.toml`. Subcommands:
 See [`examples/`](examples/) for full job-1 (consistency) and job-2
 (HEAD-compatibility) workflows.
 
-## Use via curl
+## Run locally
+
+The same logic the action runs is available locally through one wrapper,
+`zcash-dep-policy.sh`. Run it from your repo root so it finds
+`.github/dep-policy/governed-libs.toml`:
+
+```bash
+# If you have the toolbox checked out:
+path/to/toolbox/zcash-dep-policy/zcash-dep-policy.sh check
+path/to/toolbox/zcash-dep-policy/zcash-dep-policy.sh rewrite-to-head
+
+# Without a checkout (downloads the pinned script into ~/.cache, then runs it):
+curl -fsSL https://raw.githubusercontent.com/dannywillems/toolbox/main/zcash-dep-policy/zcash-dep-policy.sh \
+  | sh -s -- check
+```
+
+Pin the version with `ZCASH_DEP_POLICY_REF=<commit-sha>`. The wrapper uses the
+`dep_policy.py` next to it when present (clone / action checkout), otherwise
+downloads it. Requires `python3` (>= 3.11) and `git`; `curl` only when
+downloading.
+
+A consumer repo that inlines the script can run it directly instead:
+
+```bash
+python3 .github/dep-policy/dep_policy.py check
+```
+
+## Use via curl (script only)
 
 ```bash
 curl -sSLO https://raw.githubusercontent.com/dannywillems/toolbox/main/zcash-dep-policy/dep_policy.py
