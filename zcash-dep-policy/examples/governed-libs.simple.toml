@@ -1,0 +1,57 @@
+# Example governed-libs.toml for a single crate that declares Zcash deps as
+# plain registry version pins in [dependencies] (e.g. an Android SDK's
+# backend-lib/Cargo.toml). No [patch.crates-io].
+#
+# Place at .github/dep-policy/governed-libs.toml in the consumer repo.
+
+consumer_manifest = "backend-lib/Cargo.toml"
+# consumer_tables defaults to ["dependencies"]; set explicitly for clarity.
+consumer_tables = ["dependencies"]
+
+# Job 2 (rewrite-to-head) rewrites each governed version pin to a git dep on its
+# branch HEAD (the default), so `cargo check` builds against upstream HEAD.
+head_rewrite_deps = true
+
+# severity: "warn" annotates (default); "error" fails the job.
+
+[[library]]
+crate = "orchard"
+repo = "zcash/orchard"
+manifest = "Cargo.toml"
+ref = "main"
+
+[[library]]
+crate = "sapling-crypto"
+repo = "zcash/sapling-crypto"
+manifest = "Cargo.toml"
+ref = "main"
+
+[[library]]
+crate = "zcash_client_backend"
+repo = "zcash/librustzcash"
+manifest = "zcash_client_backend/Cargo.toml"
+ref = "main"
+
+[[library]]
+crate = "zcash_client_sqlite"
+repo = "zcash/librustzcash"
+manifest = "zcash_client_sqlite/Cargo.toml"
+ref = "main"
+
+[[library]]
+crate = "zcash_primitives"
+repo = "zcash/librustzcash"
+manifest = "zcash_primitives/Cargo.toml"
+ref = "main"
+
+[[library]]
+crate = "zcash_protocol"
+repo = "zcash/librustzcash"
+manifest = "components/zcash_protocol/Cargo.toml"
+ref = "main"
+
+[[library]]
+crate = "zcash_address"
+repo = "zcash/librustzcash"
+manifest = "components/zcash_address/Cargo.toml"
+ref = "main"

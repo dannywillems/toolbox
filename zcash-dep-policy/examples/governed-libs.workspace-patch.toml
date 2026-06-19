@@ -1,0 +1,99 @@
+# Example governed-libs.toml for a Cargo *workspace* that pins the librustzcash
+# crates via [patch.crates-io] (e.g. zcash/wallet).
+#
+# Place at .github/dep-policy/governed-libs.toml in the consumer repo.
+
+consumer_manifest = "Cargo.toml"
+consumer_tables = ["workspace.dependencies"]
+
+# Job 2 (rewrite-to-head) only repoints the [patch.crates-io] git pins to their
+# branch HEAD; it does NOT convert released registry pins into git deps.
+head_rewrite_deps = false
+
+# severity: "warn" annotates (default); "error" fails the job.
+
+# --- librustzcash crates (pinned via [patch.crates-io]; checked rev-vs-HEAD) -
+[[library]]
+crate = "zcash_address"
+repo = "zcash/librustzcash"
+ref = "main"
+
+[[library]]
+crate = "zcash_client_backend"
+repo = "zcash/librustzcash"
+ref = "main"
+
+[[library]]
+crate = "zcash_client_sqlite"
+repo = "zcash/librustzcash"
+ref = "main"
+
+[[library]]
+crate = "zcash_keys"
+repo = "zcash/librustzcash"
+ref = "main"
+
+[[library]]
+crate = "zcash_primitives"
+repo = "zcash/librustzcash"
+ref = "main"
+
+[[library]]
+crate = "zcash_proofs"
+repo = "zcash/librustzcash"
+ref = "main"
+
+[[library]]
+crate = "zcash_protocol"
+repo = "zcash/librustzcash"
+ref = "main"
+
+[[library]]
+crate = "zcash_transparent"
+repo = "zcash/librustzcash"
+ref = "main"
+
+# --- Standalone upstream crates (registry version pins; checked vs [package]) -
+[[library]]
+crate = "orchard"
+repo = "zcash/orchard"
+manifest = "Cargo.toml"
+ref = "main"
+
+# Renamed to `sapling` via `package = "sapling-crypto"`; match on package name.
+[[library]]
+crate = "sapling-crypto"
+repo = "zcash/sapling-crypto"
+manifest = "Cargo.toml"
+ref = "main"
+
+[[library]]
+crate = "zcash_encoding"
+repo = "zcash/librustzcash"
+manifest = "components/zcash_encoding/Cargo.toml"
+ref = "main"
+
+[[library]]
+crate = "zcash_note_encryption"
+repo = "zcash/zcash_note_encryption"
+manifest = "Cargo.toml"
+ref = "main"
+
+# Note: zip32's upstream default branch is `master`, not `main`.
+[[library]]
+crate = "zip32"
+repo = "zcash/zip32"
+manifest = "Cargo.toml"
+ref = "master"
+
+[[library]]
+crate = "incrementalmerkletree"
+repo = "zcash/incrementalmerkletree"
+manifest = "incrementalmerkletree/Cargo.toml"
+ref = "main"
+
+[[library]]
+crate = "shardtree"
+repo = "zcash/incrementalmerkletree"
+manifest = "shardtree/Cargo.toml"
+ref = "main"

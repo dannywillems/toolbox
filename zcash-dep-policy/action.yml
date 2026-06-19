@@ -1,0 +1,46 @@
+name: "Zcash dependency-version policy"
+description: >
+  Check that a consumer repo's governed Zcash crate pins match their upstream
+  libraries (or repoint patch pins to HEAD), driven by a per-repo
+  governed-libs.toml config.
+
+inputs:
+  command:
+    description: "Subcommand: 'check' or 'rewrite-to-head'."
+    required: false
+    default: "check"
+  config:
+    description: "Path to the governed-libs.toml config in the consumer repo."
+    required: false
+    default: ".github/dep-policy/governed-libs.toml"
+  manifest:
+    description: >
+      Optional override for the consumer manifest path (otherwise taken from
+      consumer_manifest in the config).
+    required: false
+    default: ""
+  allow:
+    description: "Path to an optional allow.toml exceptions file."
+    required: false
+    default: ".github/dep-policy/allow.toml"
+
+runs:
+  using: "composite"
+  steps:
+    - name: Run Zcash dependency-version policy
+      shell: bash
+      # Inputs are passed through the environment, never interpolated into the
+      # command string, to avoid template injection.
+      env:
+        ZDP_COMMAND: ${{ inputs.command }}
+        ZDP_CONFIG: ${{ inputs.config }}
+        ZDP_MANIFEST: ${{ inputs.manifest }}
+        ZDP_ALLOW: ${{ inputs.allow }}
+        ZDP_DIR: ${{ github.action_path }}
+      run: |
+        set -euo pipefail
+        args=("$ZDP_COMMAND" --config "$ZDP_CONFIG" --allow "$ZDP_ALLOW")
+        if [ -n "$ZDP_MANIFEST" ]; then
+          args+=(--manifest "$ZDP_MANIFEST")
+        fi
+        python3 "$ZDP_DIR/dep_policy.py" "${args[@]}"

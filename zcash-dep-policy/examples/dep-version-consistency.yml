@@ -1,0 +1,35 @@
+# Example consumer workflow, job 1 of 2: version consistency.
+#
+# Copy to .github/workflows/ in the consumer repo. Warn-by-default: drift is
+# annotated but does not fail unless a library is set to severity = "error" in
+# the consumer's governed-libs.toml.
+#
+# Pin the toolbox reference (@<commit-sha>) instead of @main for reproducibility.
+
+name: Dependency Version Consistency
+
+on:
+  pull_request:
+    paths:
+      - "Cargo.toml"
+      - ".github/dep-policy/**"
+      - ".github/workflows/dep-version-consistency.yml"
+  schedule:
+    - cron: "23 5 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  check-dep-versions:
+    name: Check governed Zcash dependency versions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: dannywillems/toolbox/zcash-dep-policy@main
+        with:
+          command: check

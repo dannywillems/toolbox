@@ -1,0 +1,41 @@
+# Example consumer workflow, job 2 of 2: HEAD compatibility.
+#
+# Copy to .github/workflows/ in the consumer repo. Repoints the governed pins to
+# upstream branch HEAD and runs `cargo check`, as an early warning that upstream
+# main still builds. A red run needs a human to look.
+#
+# Pin the toolbox reference (@<commit-sha>) instead of @main for reproducibility.
+
+name: Dependency HEAD Compatibility
+
+on:
+  pull_request:
+    paths:
+      - "Cargo.toml"
+      - ".github/dep-policy/**"
+      - ".github/workflows/dep-head-compat.yml"
+  schedule:
+    - cron: "41 4 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  build-against-head:
+    name: cargo check against upstream HEAD
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      # No toolchain action: the runner's rustup honors rust-toolchain.toml if
+      # present, otherwise the preinstalled stable toolchain is used.
+      - uses: dannywillems/toolbox/zcash-dep-policy@main
+        with:
+          command: rewrite-to-head
+      - name: Show rewritten manifest
+        run: git --no-pager diff -- Cargo.toml || true
+      - name: cargo check against HEAD
+        run: cargo check --workspace --all-features
